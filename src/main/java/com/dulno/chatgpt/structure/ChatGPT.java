@@ -13,13 +13,15 @@ import java.util.UUID;
 public final class ChatGPT {
   public static ChatGPT of(DatabaseRow row) {
     return create(row.findCell(0).uuidValue(), row.findCell(1).uuidValue(),
-      row.findCell(2).stringValue(), row.findCell(3).stringValue(),
-      row.findCell(4).stringValue());
+      row.findCell(2).stringValue(),
+      ChatGPTType.valueOf(row.findCell(3).stringValue()),
+      row.findCell(4).stringValue(), row.findCell(5).stringValue());
   }
 
   private final UUID id;
   private final UUID ownerId;
   private final String accountName;
+  private final ChatGPTType accountType;
   private final String accessToken;
   private final String organizationId;
 }

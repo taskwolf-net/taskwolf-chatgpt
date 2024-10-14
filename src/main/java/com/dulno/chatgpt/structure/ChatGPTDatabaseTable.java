@@ -20,6 +20,7 @@ public final class ChatGPTDatabaseTable extends DatabaseTable {
       DatabaseColumn.Type.PRIMARY_KEY));
     columns.add(DatabaseColumn.create("owner", DatabaseDataType.UUID));
     columns.add(DatabaseColumn.create("accountName", DatabaseDataType.TEXT));
+    columns.add(DatabaseColumn.create("accountType", DatabaseDataType.TEXT));
     columns.add(DatabaseColumn.create("accessToken", DatabaseDataType.TEXT));
     columns.add(DatabaseColumn.create("organization", DatabaseDataType.TEXT));
     return new ChatGPTDatabaseTable(connection, keyspace, TABLE_NAME, columns);
@@ -34,15 +35,15 @@ public final class ChatGPTDatabaseTable extends DatabaseTable {
 
   public CompletableFuture<Void> insertChatGPT(ChatGPT chatGPT) {
     return insertChatGPT(chatGPT.id(), chatGPT.ownerId(), chatGPT.accountName(),
-      chatGPT.accessToken(), chatGPT.organizationId());
+      chatGPT.accountType(), chatGPT.accessToken(), chatGPT.organizationId());
   }
 
   public CompletableFuture<Void> insertChatGPT(
-    UUID id, UUID ownerId, String accountName, String accessToken,
-    String organizationId
+    UUID id, UUID ownerId, String accountName, ChatGPTType type,
+    String accessToken, String organizationId
   ) {
-    return insert(DatabaseRow.of(id, ownerId, accountName, accessToken,
-      organizationId));
+    return insert(DatabaseRow.of(id, ownerId, accountName, type.toString(),
+      accessToken, organizationId));
   }
 
   public CompletableFuture<UUID> generateAvailableChatGPTId() {
