@@ -15,7 +15,7 @@ public final class ChatGPTAccountLink implements AccountLink {
 
   @Override
   public CompletableFuture<Boolean> accountExists(UUID id) {
-    return chatGPTDatabaseTable.chatGPTExists(id);
+    return chatGPTDatabaseTable.chatGPTExistsByOwner(id);
   }
 
   @Override
