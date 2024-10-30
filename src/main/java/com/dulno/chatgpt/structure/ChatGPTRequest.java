@@ -40,7 +40,7 @@ public final class ChatGPTRequest {
     ChatGPT chatGPT, String url, String method, String body, String contentType
   ) {
     var requestBuilder = HttpRequest.newBuilder()
-      .uri(URI.create("https://api.openai.com/v1/" + url))
+      .uri(URI.create("https://api.openai.com/v1" + url))
       .method(method, HttpRequest.BodyPublishers.ofString(body));
     requestBuilder.setHeader("Authorization", "Bearer " + chatGPT.accessToken());
     requestBuilder.setHeader("OpenAI-Organization", chatGPT.organizationId());
