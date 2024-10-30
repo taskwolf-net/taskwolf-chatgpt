@@ -1,3 +1,16 @@
 {
-  "chatgpt.link.description": "Would you like to add another ChatGPT account to integrate it into your automation with the help of Dulno? Just click on the logo."
+  "chatgpt.link.description": "Would you like to add another ChatGPT account to integrate it into your automation with the help of Dulno? Just click on the logo.",
+
+  "chatgpt.action.prompt.name": "ChatGPT Prompt",
+  "chatgpt.action.prompt.description": "Sends a prompt to ChatGPT",
+  "chatgpt.action.prompt.input.chatgpt.name": "ChatGPT",
+  "chatgpt.action.prompt.input.chatgpt.description": "The ChatGPT account from which the prompt should be answered",
+  "chatgpt.action.prompt.input.model.name": "Model",
+  "chatgpt.action.prompt.input.model.description": "The model with which the prompt is to be answered",
+  "chatgpt.action.prompt.input.prompt.name": "Prompt",
+  "chatgpt.action.prompt.input.prompt.description": "The prompt to be answered by ChatGPT",
+  "chatgpt.action.prompt.output.prompt": "ChatGPT Prompt",
+  "chatgpt.action.prompt.output.response": "ChatGPT Response",
+  "chatgpt.action.prompt.output.tokens": "ChatGPT Tokens",
+  "chatgpt.action.prompt.failure.chatgpt.not.found": "An error has occurred while sending a ChatGPT prompt. The error occurred because the ChatGPT account could not be found. Could it be that you have removed the account?"
 }

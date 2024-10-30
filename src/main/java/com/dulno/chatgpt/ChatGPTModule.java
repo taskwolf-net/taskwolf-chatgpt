@@ -1,5 +1,8 @@
 package com.dulno.chatgpt;
 
+import com.dulno.chatgpt.action.prompt.ChatGPTPromptAction;
+import com.dulno.chatgpt.select.ChatGPTComponentSelect;
+import com.dulno.chatgpt.select.ModelComponentSelect;
 import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
 import com.dulno.chatgpt.structure.ChatGPTRequestFactory;
 import com.dulno.core.account.AccountLink;
@@ -12,6 +15,7 @@ import com.dulno.core.module.ModuleDescription;
 import com.dulno.core.module.ModuleInformation;
 import com.dulno.core.module.ModuleLoadPriority;
 import com.dulno.core.trigger.TriggerRepository;
+import com.dulno.core.workflow.component.input.InputComponentSelect;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
 import org.springframework.boot.SpringApplication;
@@ -23,6 +27,9 @@ public final class ChatGPTModule extends Module {
   private SpringApplication springApplication;
   private ChatGPTContextInitializer contextInitializer;
   private AccountLink accountLink;
+  private InputComponentSelect chatGPTComponentSelect;
+  private InputComponentSelect modelComponentSelect;
+
 
   public ChatGPTModule(Injector injector) {
     super(injector.createChildInjector(ChatGPTInjectionModule.create()));
@@ -38,6 +45,9 @@ public final class ChatGPTModule extends Module {
       chatGPTRequestFactory);
     springApplication.addInitializers(contextInitializer);
     accountLink = ChatGPTAccountLink.create(chatGPTDatabaseTable);
+    chatGPTComponentSelect = ChatGPTComponentSelect.create(chatGPTDatabaseTable);
+    modelComponentSelect = ModelComponentSelect.create(chatGPTDatabaseTable,
+      chatGPTRequestFactory);
   }
 
   @Override
@@ -60,14 +70,19 @@ public final class ChatGPTModule extends Module {
 
   @Override
   public TriggerRepository triggerRepository() {
-    var databaseConnection = injector().getInstance(DatabaseConnection.class);
-    var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
-    var repository = TriggerRepository.create();
-    return repository;
+    return TriggerRepository.create();
   }
 
   @Override
   public ActionRepository actionRepository() {
-    return ActionRepository.create();
+    var databaseConnection = injector().getInstance(DatabaseConnection.class);
+    var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
+    var chatGPTDatabaseTable = injector().getInstance(ChatGPTDatabaseTable.class);
+    var chatGPTRequestFactory = injector().getInstance(ChatGPTRequestFactory.class);
+    var repository = ActionRepository.create();
+    repository.registerAction(ChatGPTPromptAction.create(chatGPTComponentSelect,
+      modelComponentSelect, chatGPTDatabaseTable, chatGPTRequestFactory,
+      databaseConnection, databaseKeyspace));
+    return repository;
   }
 }
