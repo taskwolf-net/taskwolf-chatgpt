@@ -29,6 +29,8 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
     contentColumns.add(DatabaseColumn.create("chatgptId", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("model", DatabaseDataType.TEXT));
+    contentColumns.add(DatabaseColumn.create("maxTokens", DatabaseDataType.TEXT));
+    contentColumns.add(DatabaseColumn.create("temperature", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("prompt", DatabaseDataType.TEXT));
     return new ChatGPTPromptAction(chatGPTComponentSelect, modelComponentSelect,
       chatGPTDatabaseTable, chatGPTRequestFactory,
@@ -56,11 +58,19 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
         "chatGPTIdentifier", "chatgpt.action.prompt.input.chatgpt.description", chatGPTComponentSelect))
       .withInputVariable(InputComponentVariable.createSelect("chatgpt.action.prompt.input.model.name",
         "chatGPTModel", "chatgpt.action.prompt.input.model.description", modelComponentSelect))
+      .withInputVariable(InputComponentVariable.createOptional("chatgpt.action.prompt.input.max.tokens.name",
+        "chatGPTMaxTokens", "chatgpt.action.prompt.input.max.tokens.description", InputComponentDataType.TEXT))
+      .withInputVariable(InputComponentVariable.createOptional("chatgpt.action.prompt.input.temperature.name",
+        "chatGPTTemperature", "chatgpt.action.prompt.input.temperature.description", InputComponentDataType.TEXT))
       .withInputVariable(InputComponentVariable.createRequired("chatgpt.action.prompt.input.prompt.name",
         "chatGPTPrompt", "chatgpt.action.prompt.input.prompt.description", InputComponentDataType.TEXT))
-      .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.prompt", "chatGPTPrompt"))
       .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.response", "chatGPTResponse"))
-      .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.tokens", "chatGPTTokens"))
+      .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.prompt.tokens", "chatGPTPromptTokens"))
+      .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.completion.tokens", "chatGPTCompletionTokens"))
+      .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.total.tokens", "chatGPTTotalTokens"))
+      .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.max.tokens", "chatGPTMaxTokens"))
+      .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.temperature", "chatGPTTemperature"))
+      .withOutputVariable(OutputComponentVariable.create("chatgpt.action.prompt.output.prompt", "chatGPTPrompt"))
       .build();
   }
 
@@ -71,9 +81,12 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
 
   @Override
   public CompletableFuture<Void> insert(UUID actionId, Map<String, Object> content) {
+    var maxTokens = content.get("chatGPTMaxTokens");
+    var temperature = content.get("chatGPTTemperature");
     return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(
       UUID.fromString((String) content.get("chatGPTIdentifier")),
-      content.get("chatGPTModel"), content.get("chatGPTPrompt")));
+      content.get("chatGPTModel"), maxTokens == null ? "" : maxTokens,
+      temperature == null ? "" : temperature, content.get("chatGPTPrompt")));
   }
 
   @Override
@@ -81,7 +94,9 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
     return contentDatabaseTable.findContent(actionId).thenApply(row ->
       Map.of("chatGPTIdentifier", row.findCell(1).uuidValue().toString(),
         "chatGPTModel", row.findCell(2).stringValue(),
-        "chatGPTPrompt", row.findCell(3).stringValue()));
+        "chatGPTMaxTokens", row.findCell(3).stringValue(),
+        "chatGPTTemperature", row.findCell(4).stringValue(),
+        "chatGPTPrompt", row.findCell(5).stringValue()));
   }
 
   @Override
@@ -90,7 +105,8 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
       .thenApply(content -> ChatGPTPromptActionExecutor.create(
         chatGPTDatabaseTable, chatGPTRequestFactory,
         content.findCell(1).uuidValue(), content.findCell(2).stringValue(),
-        content.findCell(3).stringValue()));
+        content.findCell(3).stringValue(), content.findCell(4).stringValue(),
+        content.findCell(5).stringValue()));
   }
 
   @Override
