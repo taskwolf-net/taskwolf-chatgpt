@@ -5,6 +5,7 @@ import com.dulno.chatgpt.structure.ChatGPTRequestFactory;
 import com.dulno.core.action.ActionExecutor;
 import com.dulno.core.action.ActionResult;
 import com.dulno.core.workflow.placeholder.PlaceholderDissolve;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import org.json.JSONObject;
@@ -33,8 +34,8 @@ public final class ChatGPTPromptActionExecutor implements ActionExecutor {
     if (!gitlabExists) {
       return ActionResult.futureFailure("chatgpt.action.prompt.failure.chatgpt.not.found");
     }
-    var body = Map.of("model", model, "messages",
-      Map.of("role", "user", "content", prompt));
+    var body = Map.<String, Object>of("model", model, "messages",
+      Lists.newArrayList(Map.of("role", "user", "content", prompt)));
     return chatGPTRequestFactory.create(chatGPTId)
       .send("/chat/completions", "POST", body).thenApply(this::execute);
   }
