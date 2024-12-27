@@ -2,8 +2,8 @@ package com.dulno.chatgpt.select;
 
 import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
 import com.dulno.core.user.User;
-import com.dulno.core.workflow.component.input.InputComponentSelect;
-import com.dulno.core.workflow.component.input.InputComponentSelectEntry;
+import com.dulno.workflow.component.input.InputComponentSelect;
+import com.dulno.workflow.component.input.InputComponentSelectEntry;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

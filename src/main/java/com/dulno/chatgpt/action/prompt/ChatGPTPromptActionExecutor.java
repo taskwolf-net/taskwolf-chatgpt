@@ -2,9 +2,9 @@ package com.dulno.chatgpt.action.prompt;
 
 import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
 import com.dulno.chatgpt.structure.ChatGPTRequestFactory;
-import com.dulno.core.action.ActionExecutor;
-import com.dulno.core.action.ActionResult;
-import com.dulno.core.workflow.placeholder.PlaceholderDissolve;
+import com.dulno.workflow.action.ActionExecutor;
+import com.dulno.workflow.action.ActionResult;
+import com.dulno.workflow.placeholder.PlaceholderDissolve;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
