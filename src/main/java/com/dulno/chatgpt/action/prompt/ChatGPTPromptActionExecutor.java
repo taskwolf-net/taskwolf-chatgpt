@@ -1,5 +1,6 @@
 package com.dulno.chatgpt.action.prompt;
 
+import com.dulno.chatgpt.structure.ChatGPT;
 import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
 import com.dulno.chatgpt.structure.ChatGPTRequestFactory;
 import com.dulno.workflow.action.ActionExecutor;
@@ -19,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 public final class ChatGPTPromptActionExecutor implements ActionExecutor {
   private final ChatGPTDatabaseTable chatGPTDatabaseTable;
   private final ChatGPTRequestFactory chatGPTRequestFactory;
+  private final UUID ownerId;
   private final UUID chatGPTId;
   private final String model;
   private String maxTokens;
@@ -34,8 +36,15 @@ public final class ChatGPTPromptActionExecutor implements ActionExecutor {
     return chatGPTDatabaseTable.chatGPTExists(chatGPTId).thenCompose(this::execute);
   }
 
-  private CompletableFuture<ActionResult> execute(boolean gitlabExists) {
-    if (!gitlabExists) {
+  private CompletableFuture<ActionResult> execute(boolean chatGPTExists) {
+    if (!chatGPTExists) {
+      return ActionResult.futureFailure("chatgpt.action.prompt.failure.chatgpt.not.found");
+    }
+    return chatGPTDatabaseTable.findChatGPT(chatGPTId).thenCompose(this::execute);
+  }
+
+  private CompletableFuture<ActionResult> execute(ChatGPT chatGPT) {
+    if (!chatGPT.ownerId().equals(ownerId)) {
       return ActionResult.futureFailure("chatgpt.action.prompt.failure.chatgpt.not.found");
     }
     var body = Maps.<String, Object>newHashMap();

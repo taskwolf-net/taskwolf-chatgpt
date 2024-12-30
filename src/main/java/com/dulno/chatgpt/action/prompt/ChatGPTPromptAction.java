@@ -27,6 +27,7 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("ownerId", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("chatgptId", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("model", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("maxTokens", DatabaseDataType.TEXT));
@@ -80,10 +81,12 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
   }
 
   @Override
-  public CompletableFuture<Void> insert(UUID actionId, Map<String, Object> content) {
+  public CompletableFuture<Void> insert(
+    UUID actionId, UUID ownerId, Map<String, Object> content
+  ) {
     var maxTokens = content.get("chatGPTMaxTokens");
     var temperature = content.get("chatGPTTemperature");
-    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(
+    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(ownerId,
       UUID.fromString((String) content.get("chatGPTIdentifier")),
       content.get("chatGPTModel"), maxTokens == null ? "" : maxTokens,
       temperature == null ? "" : temperature, content.get("chatGPTPrompt")));
@@ -92,11 +95,11 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID actionId) {
     return contentDatabaseTable.findContent(actionId).thenApply(row ->
-      Map.of("chatGPTIdentifier", row.findCell(1).uuidValue().toString(),
-        "chatGPTModel", row.findCell(2).stringValue(),
-        "chatGPTMaxTokens", row.findCell(3).stringValue(),
-        "chatGPTTemperature", row.findCell(4).stringValue(),
-        "chatGPTPrompt", row.findCell(5).stringValue()));
+      Map.of("chatGPTIdentifier", row.findCell(2).uuidValue().toString(),
+        "chatGPTModel", row.findCell(3).stringValue(),
+        "chatGPTMaxTokens", row.findCell(4).stringValue(),
+        "chatGPTTemperature", row.findCell(5).stringValue(),
+        "chatGPTPrompt", row.findCell(6).stringValue()));
   }
 
   @Override
@@ -104,9 +107,9 @@ public final class ChatGPTPromptAction implements Action<ChatGPTPromptActionExec
     return contentDatabaseTable.findContent(actionId)
       .thenApply(content -> ChatGPTPromptActionExecutor.create(
         chatGPTDatabaseTable, chatGPTRequestFactory,
-        content.findCell(1).uuidValue(), content.findCell(2).stringValue(),
+        content.findCell(1).uuidValue(), content.findCell(2).uuidValue(),
         content.findCell(3).stringValue(), content.findCell(4).stringValue(),
-        content.findCell(5).stringValue()));
+        content.findCell(5).stringValue(), content.findCell(6).stringValue()));
   }
 
   @Override
