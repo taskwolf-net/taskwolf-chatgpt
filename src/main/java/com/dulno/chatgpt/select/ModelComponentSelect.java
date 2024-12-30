@@ -1,5 +1,6 @@
 package com.dulno.chatgpt.select;
 
+import com.dulno.chatgpt.structure.ChatGPT;
 import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
 import com.dulno.chatgpt.structure.ChatGPTRequestFactory;
 import com.dulno.core.user.User;
@@ -27,13 +28,31 @@ public class ModelComponentSelect implements InputComponentSelect {
     try {
       var chatGPTId = UUID.fromString(previousInputs.get("chatGPTIdentifier"));
       return chatGPTDatabaseTable.chatGPTExists(chatGPTId).thenCompose(exists ->
-        exists ? chatGPTRequestFactory.create(chatGPTId)
-          .send("/models", "GET", "")
-          .thenApply(this::parseModels) :
-          CompletableFuture.completedFuture(Lists.newArrayList()));
+        checkChatGPTExistence(chatGPTId, target, exists));
     } catch (Exception exception) {
       return CompletableFuture.completedFuture(Lists.newArrayList());
     }
+  }
+
+  private CompletableFuture<List<InputComponentSelectEntry>> checkChatGPTExistence(
+    UUID chatGPTId, UUID target, boolean chatGPTExists
+  ) {
+    if (!chatGPTExists) {
+      return CompletableFuture.completedFuture(Lists.newArrayList());
+    }
+    return chatGPTDatabaseTable.findChatGPT(chatGPTId)
+      .thenCompose(chatGPT -> checkChatGPTAccess(chatGPT, target));
+  }
+
+  private CompletableFuture<List<InputComponentSelectEntry>> checkChatGPTAccess(
+    ChatGPT chatGPT, UUID target
+  ) {
+    if (!chatGPT.ownerId().equals(target)) {
+      return CompletableFuture.completedFuture(Lists.newArrayList());
+    }
+    return chatGPTRequestFactory.create(chatGPT.id())
+      .send("/models", "GET", "")
+      .thenApply(this::parseModels);
   }
 
   private List<InputComponentSelectEntry> parseModels(
