@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
 
 @RestController
 public class ChatGPTController extends DulnoRestController {
@@ -59,9 +58,9 @@ public class ChatGPTController extends DulnoRestController {
       .thenCompose(user -> userTargetDatabaseTable.findTargetSecured(user.id())
         .thenCompose(target -> findChatGPTOwner(user, target)
           .thenCompose(owner -> chatGPTDatabaseTable.generateAvailableChatGPTId()
-            .thenCompose(id -> findOrganizations(accessToken)
-              .thenApply(organization -> addChatGPT(id, owner, accessToken,
-                organizationId, organization))))));
+            .thenCompose(id -> findChatGPTUser(accessToken)
+              .thenApply(chatGPTUser -> addChatGPT(id, owner, accessToken,
+                organizationId, chatGPTUser))))));
   }
 
   private CompletableFuture<UUID> findChatGPTOwner(User user, UUID target) {
@@ -73,13 +72,14 @@ public class ChatGPTController extends DulnoRestController {
 
   private Map<String, Object> addChatGPT(
     UUID id, UUID ownerId, String accessToken, String organizationId,
-    HttpResponse<String> organizationResponse
+    HttpResponse<String> userResponse
   ) {
-    if (organizationResponse.statusCode() != 200) {
+    if (userResponse.statusCode() != 200) {
       return Map.of("success", false);
     }
-    var organizations = new JSONObject(organizationResponse.body())
-      .getJSONArray("data");
+    var user = new JSONObject(userResponse.body());
+    var accountName = user.getString("name") + " (" + user.getString("email") + ")";
+    var organizations = user.getJSONObject("orgs").getJSONArray("data");
     var organizationOptional = searchSelectedOrganization(organizations,
       organizationId);
     if (organizationOptional.isEmpty()) {
@@ -88,24 +88,9 @@ public class ChatGPTController extends DulnoRestController {
     var organization = organizationOptional.get();
     var type = organization.getBoolean("personal") ? ChatGPTType.PERSONAL :
       ChatGPTType.ORGANIZATION;
-    chatGPTDatabaseTable.insertChatGPT(id, ownerId,
-      findAccountName(organization, type), type, accessToken, organizationId);
+    chatGPTDatabaseTable.insertChatGPT(id, ownerId, accountName, type,
+      accessToken, organization.getString("id"));
     return Map.of("success", true);
-  }
-
-  private static final Pattern EMAIL_EXTRACTION_PATTERN =
-    Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
-
-  private String findAccountName(JSONObject organization, ChatGPTType type) {
-    if (type.isOrganization()) {
-      return organization.getString("title");
-    }
-    var matcher = EMAIL_EXTRACTION_PATTERN.matcher(
-      organization.getString("description"));
-    if (matcher.find()) {
-      return matcher.group();
-    }
-    return organization.getString("title");
   }
 
   private Optional<JSONObject> searchSelectedOrganization(
@@ -122,11 +107,11 @@ public class ChatGPTController extends DulnoRestController {
     return Optional.empty();
   }
 
-  private CompletableFuture<HttpResponse<String>> findOrganizations(
+  private CompletableFuture<HttpResponse<String>> findChatGPTUser(
     String accessToken
   ) {
     var request = HttpRequest.newBuilder()
-      .uri(URI.create("https://api.openai.com/v1/organizations"))
+      .uri(URI.create("https://api.openai.com/v1/me"))
       .GET().header("Authorization", "Bearer " + accessToken).build();
     return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
   }
