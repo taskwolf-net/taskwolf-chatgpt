@@ -34,7 +34,7 @@ public final class ChatGPTAccountLink implements AccountLink {
 
   @Override
   public String registrationUrl(UUID id, String apiKey) {
-    return "https://dulno.com/chatgpt/connect/";
+    return "/chatgpt/connect/";
   }
 
   @Override
