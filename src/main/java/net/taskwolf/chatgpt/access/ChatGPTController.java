@@ -1,13 +1,13 @@
-package com.dulno.chatgpt.access;
+package net.taskwolf.chatgpt.access;
 
-import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
-import com.dulno.chatgpt.structure.ChatGPTType;
-import com.dulno.core.access.DulnoRequestBody;
-import com.dulno.core.access.DulnoRestController;
-import com.dulno.core.organization.team.TeamTargetDatabaseTable;
-import com.dulno.core.user.User;
-import com.dulno.core.user.UserDatabaseTable;
-import com.dulno.core.user.UserTargetDatabaseTable;
+import net.taskwolf.chatgpt.structure.ChatGPTDatabaseTable;
+import net.taskwolf.chatgpt.structure.ChatGPTType;
+import net.taskwolf.core.access.TaskwolfRequestBody;
+import net.taskwolf.core.access.TaskwolfRestController;
+import net.taskwolf.core.organization.team.TeamTargetDatabaseTable;
+import net.taskwolf.core.user.User;
+import net.taskwolf.core.user.UserDatabaseTable;
+import net.taskwolf.core.user.UserTargetDatabaseTable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-public class ChatGPTController extends DulnoRestController {
+public class ChatGPTController extends TaskwolfRestController {
   private final ChatGPTDatabaseTable chatGPTDatabaseTable;
   private final UserTargetDatabaseTable userTargetDatabaseTable;
   private final TeamTargetDatabaseTable teamTargetDatabaseTable;
@@ -51,7 +51,7 @@ public class ChatGPTController extends DulnoRestController {
     HttpServletRequest request, @RequestBody String payload,
     HttpServletResponse response
   ) {
-    var body = DulnoRequestBody.of(payload, response);
+    var body = TaskwolfRequestBody.of(payload, response);
     var accessToken = body.getString("accessToken");
     var organizationId = body.getString("organization");
     return findUser(request)

@@ -1,8 +1,8 @@
-package com.dulno.chatgpt;
+package net.taskwolf.chatgpt;
 
-import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
-import com.dulno.core.database.DatabaseConnection;
-import com.dulno.core.database.DatabaseKeyspace;
+import net.taskwolf.chatgpt.structure.ChatGPTDatabaseTable;
+import net.taskwolf.core.database.DatabaseConnection;
+import net.taskwolf.core.database.DatabaseKeyspace;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;

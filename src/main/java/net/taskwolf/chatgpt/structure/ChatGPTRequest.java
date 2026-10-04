@@ -1,4 +1,4 @@
-package com.dulno.chatgpt.structure;
+package net.taskwolf.chatgpt.structure;
 
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;

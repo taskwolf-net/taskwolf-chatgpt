@@ -1,8 +1,8 @@
-package com.dulno.chatgpt;
+package net.taskwolf.chatgpt;
 
-import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
-import com.dulno.core.account.AccountLink;
-import com.dulno.core.account.AccountLinkEntry;
+import net.taskwolf.chatgpt.structure.ChatGPTDatabaseTable;
+import net.taskwolf.core.account.AccountLink;
+import net.taskwolf.core.account.AccountLinkEntry;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

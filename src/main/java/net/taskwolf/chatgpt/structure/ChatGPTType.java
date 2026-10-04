@@ -1,4 +1,4 @@
-package com.dulno.chatgpt.structure;
+package net.taskwolf.chatgpt.structure;
 
 public enum ChatGPTType {
   PERSONAL,

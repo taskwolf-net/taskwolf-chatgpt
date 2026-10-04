@@ -1,4 +1,4 @@
-package com.dulno.chatgpt.structure;
+package net.taskwolf.chatgpt.structure;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

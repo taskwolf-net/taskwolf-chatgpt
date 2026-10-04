@@ -1,9 +1,9 @@
-package com.dulno.chatgpt.select;
+package net.taskwolf.chatgpt.select;
 
-import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
-import com.dulno.core.user.User;
-import com.dulno.workflow.component.input.InputComponentSelect;
-import com.dulno.workflow.component.input.InputComponentSelectEntry;
+import net.taskwolf.chatgpt.structure.ChatGPTDatabaseTable;
+import net.taskwolf.core.user.User;
+import net.taskwolf.workflow.component.input.InputComponentSelect;
+import net.taskwolf.workflow.component.input.InputComponentSelectEntry;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

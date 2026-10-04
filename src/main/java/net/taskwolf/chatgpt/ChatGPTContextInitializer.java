@@ -1,7 +1,7 @@
-package com.dulno.chatgpt;
+package net.taskwolf.chatgpt;
 
-import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
-import com.dulno.chatgpt.structure.ChatGPTRequestFactory;
+import net.taskwolf.chatgpt.structure.ChatGPTDatabaseTable;
+import net.taskwolf.chatgpt.structure.ChatGPTRequestFactory;
 import com.google.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContextInitializer;

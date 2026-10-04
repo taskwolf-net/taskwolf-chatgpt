@@ -1,11 +1,11 @@
-package com.dulno.chatgpt.action.prompt;
+package net.taskwolf.chatgpt.action.prompt;
 
-import com.dulno.chatgpt.structure.ChatGPT;
-import com.dulno.chatgpt.structure.ChatGPTDatabaseTable;
-import com.dulno.chatgpt.structure.ChatGPTRequestFactory;
-import com.dulno.workflow.action.ActionExecutor;
-import com.dulno.workflow.action.ActionResult;
-import com.dulno.workflow.placeholder.PlaceholderDissolve;
+import net.taskwolf.chatgpt.structure.ChatGPT;
+import net.taskwolf.chatgpt.structure.ChatGPTDatabaseTable;
+import net.taskwolf.chatgpt.structure.ChatGPTRequestFactory;
+import net.taskwolf.workflow.action.ActionExecutor;
+import net.taskwolf.workflow.action.ActionResult;
+import net.taskwolf.workflow.placeholder.PlaceholderDissolve;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
